@@ -1,0 +1,148 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'commander/import'
+require 'fileutils'
+require 'psych'
+require 'boom'
+
+APP_NAME = 'boom'
+#TODO make configurable?
+DESKTOP_DIR = File.expand_path('~/Desktop/')
+#TODO make configurable?
+PROJECTS_DIRECTORY = "~/Documents/#{APP_NAME}/"
+HELP_STRING = "#{APP_NAME} helps maintain your OS X desktop. Use APP_NAME so that your desktop 
+only contains files and folders for the current project you are 
+working on.
+
+When you switch projects, the files and folders in the desktop will 
+be kept and tagged with the project's name so it can be restored 
+later by #{APP_NAME} again.
+
+Assuming you are current working on project `A`, to switch to the 
+project called `B`, run
+
+  $ APP_NAME B
+
+Files and folders in the desktop will be moved away and tagged as 
+belonging to project `A` and the files and folders for project `B` 
+will be moved to the desktop.
+
+If `B` doesn't exist yet, it will be created.
+
+"
+
+program :version, DesktopBoom::VERSION
+program :description, HELP_STRING
+
+default_command :switch
+
+def config_path
+  File.expand_path("~/.config/#{APP_NAME}.yml")
+end
+
+command :switch do |c|
+  c.syntax = "#{APP_NAME} [switch]"
+  c.summary = 'Switch project'
+  c.description = c.summary
+  c.example 'Run command', "$ #{APP_NAME} <project name>"
+  c.action do |args, options|
+    say_error "Specify the name of the project you want to switch to. If the project 
+doesn't exist, it will be created:
+
+    #{APP_NAME} <project name>
+" and abort if args.empty?
+    new_project = args[0]
+    create_configuration_file unless File.file? config_path
+    File.open(config_path) do |f|
+      mapping = Psych.load(f.read)
+      projects_directory = mapping['projects_directory']
+      current_project = mapping['current_project']
+
+      if new_project == current_project
+        say "Already at project '#{current_project}'"
+        break
+      end
+      move_desktop_to_project(current_project, projects_directory)
+      switch_to(mapping, new_project)
+      move_project_to_desktop(new_project, projects_directory)
+    end
+  end
+end
+
+command :current do |c|
+  c.syntax = "#{APP_NAME} current"
+  c.summary = 'Show the current project name'
+  c.description = c.summary
+  c.example 'Run command', "$ #{APP_NAME} current"
+  c.action do |args, options|
+    create_configuration_file unless File.file? config_path
+    File.open(config_path) do |f|
+      mapping = Psych.load(f.read)
+      projects_directory = mapping['projects_directory']
+      current_project = mapping['current_project']
+      say current_project
+    end
+  end
+end
+
+command :list do |c|
+  c.syntax = "#{APP_NAME} list"
+  c.summary = 'Show list of projects'
+  c.description = c.summary
+  c.example 'Run command', "$ #{APP_NAME} list"
+  c.action do |args, options|
+    create_configuration_file unless File.file? config_path
+    File.open(config_path) do |f|
+      mapping = Psych.load(f.read)
+      projects_directory = mapping['projects_directory']
+      projects = Dir.entries(File.expand_path(projects_directory)).reject {|e| e == '.' || e == '..' || !File.directory?(File.expand_path(e, projects_directory))}
+      current_project = mapping['current_project']
+      projects.each do |e|
+        if e == current_project
+          say "#{e} <="
+        else
+          say e
+        end
+      end
+    end
+  end
+end
+
+def create_configuration_file
+  write_configuration(nil)
+end
+
+def write_configuration(contents)
+  config_dir = File.dirname(config_path)
+  contents ||= {'projects_directory' => PROJECTS_DIRECTORY}
+  FileUtils.mkdir_p(config_dir) unless File.directory? config_dir
+  File.open(config_path, 'w') {|f| f.write(Psych.dump(contents))}
+end
+
+def move_dir_contents(from_dir, to_dir)
+  entries = Dir.entries(from_dir).reject {|e| e == '.' || e == '..'}
+  FileUtils.mkdir_p(to_dir) unless File.directory? to_dir
+  entries.each {|e| FileUtils.mv(File.expand_path(e, from_dir), File.expand_path(e, to_dir))}
+end
+
+def switch_to(mapping, new_project)
+  mapping['current_project'] = new_project
+  write_configuration(mapping)
+end
+
+def move_desktop_to_project(current_project, projects_directory)
+  return unless current_project
+  project_dir = File.expand_path(current_project, projects_directory)
+  move_dir_contents(DESKTOP_DIR, project_dir)
+end
+
+def move_project_to_desktop(new_project, projects_directory)
+  project_dir = File.expand_path(new_project, projects_directory)
+  unless File.directory? project_dir
+    FileUtils.mkdir_p(project_dir) 
+    say "New project created '#{new_project}'"
+  end
+  move_dir_contents(project_dir, DESKTOP_DIR)
+  say "Switched to project '#{new_project}'"
+end
