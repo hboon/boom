@@ -91,6 +91,7 @@ command :list do |c|
   c.summary = 'Show list of projects'
   c.description = c.summary
   c.example 'Run command', "$ #{APP_NAME} list"
+  c.option '-l', 'List in long format'
   c.action do |args, options|
     create_configuration_file unless File.file? config_path
     File.open(config_path) do |f|
@@ -100,9 +101,19 @@ command :list do |c|
       current_project = mapping['current_project']
       projects.each do |e|
         if e == current_project
-          say "#{e} <="
+          if options.l
+            entries = Dir.entries(File.expand_path(DESKTOP_DIR)).reject {|e| e == '.' || e == '..' || e.start_with?('.')}
+            say "#{e} (#{entries.size}) <="
+          else
+            say "#{e} <="
+          end
         else
-          say e
+          if options.l
+            entries = Dir.entries(File.expand_path(e, projects_directory)).reject {|e| e == '.' || e == '..' || e.start_with?('.')}
+            say "#{e} (#{entries.size})"
+          else
+            say e
+          end
         end
       end
     end
