@@ -11,7 +11,7 @@ APP_NAME = 'boom'
 DESKTOP_DIR = File.expand_path('~/Desktop/')
 #TODO make configurable?
 PROJECTS_DIRECTORY = "~/Documents/#{APP_NAME}/"
-HELP_STRING = "#{APP_NAME} helps maintain your OS X desktop. Use APP_NAME so that your desktop 
+HELP_STRING = "#{APP_NAME} helps maintain your OS X desktop. Use #{APP_NAME} so that your desktop 
 only contains files and folders for the current project you are 
 working on.
 
@@ -22,7 +22,7 @@ later by #{APP_NAME} again.
 Assuming you are current working on project `A`, to switch to the 
 project called `B`, run
 
-  $ APP_NAME B
+  $ #{APP_NAME} B
 
 Files and folders in the desktop will be moved away and tagged as 
 belonging to project `A` and the files and folders for project `B` 
