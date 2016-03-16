@@ -120,6 +120,30 @@ command :list do |c|
   end
 end
 
+command :rename do |c|
+  c.syntax = "#{APP_NAME} rename"
+  c.summary = 'Rename project'
+  c.description = c.summary
+  c.example 'Run command', "$ #{APP_NAME} rename <source> <target>"
+  c.action do |args, options|
+    say_error "You must specify both the original project name and the new project name
+  $ #{APP_NAME} rename <source> <target>
+    " and abort unless args.size == 2
+    File.open(config_path) do |f|
+      mapping = Psych.load(f.read)
+      projects_directory = mapping['projects_directory']
+      current_project = mapping['current_project']
+      projects = Dir.entries(File.expand_path(projects_directory)).reject {|e| e == '.' || e == '..' || !File.directory?(File.expand_path(e, projects_directory))}
+      source = args[0]
+      destination = args[1]
+      say_error "Project does not exist: `#{source}`" and abort unless (projects + [current_project]).include? source
+      say_error "There is an existing project with the name: `#{destination}`" and abort if (projects + [current_project]).include? destination
+      switch_to(mapping, destination) if current_project == source
+      FileUtils.mv(File.expand_path(source, projects_directory), File.expand_path(destination, projects_directory))
+    end
+  end
+end
+
 def create_configuration_file
   write_configuration(nil)
 end
