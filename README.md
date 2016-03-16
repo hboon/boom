@@ -20,6 +20,12 @@ Files and folders in the desktop will be moved away and tagged as belonging to p
 
 If `B` doesn't exist yet, it will be created.
 
+To get help:
+
+```
+$ boom --help
+```
+
 Installation
 ---
 `gem install desktop-boom`
