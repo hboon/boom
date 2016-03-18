@@ -42,6 +42,15 @@ def config_path
   File.expand_path("~/.config/#{APP_NAME}.yml")
 end
 
+def with_config(&block)
+  File.open(config_path) do |f|
+    mapping = Psych.load(f.read)
+    projects_directory = mapping['projects_directory']
+    current_project = mapping['current_project']
+    block.call(mapping, projects_directory, current_project)
+  end
+end
+
 command :switch do |c|
   c.syntax = "#{APP_NAME} [switch]"
   c.summary = 'Switch project'
@@ -55,11 +64,7 @@ doesn't exist, it will be created:
 " and abort if args.empty?
     new_project = args[0]
     create_configuration_file unless File.file? config_path
-    File.open(config_path) do |f|
-      mapping = Psych.load(f.read)
-      projects_directory = mapping['projects_directory']
-      current_project = mapping['current_project']
-
+    with_config do |mapping, projects_directory, current_project|
       if new_project == current_project
         say "Already at project '#{current_project}'"
         break
@@ -78,10 +83,7 @@ command :current do |c|
   c.example 'Run command', "$ #{APP_NAME} current"
   c.action do |args, options|
     create_configuration_file unless File.file? config_path
-    File.open(config_path) do |f|
-      mapping = Psych.load(f.read)
-      projects_directory = mapping['projects_directory']
-      current_project = mapping['current_project']
+    with_config do |mapping, projects_directory, current_project|
       say current_project
     end
   end
@@ -95,11 +97,8 @@ command :list do |c|
   c.option '-l', 'List in long format'
   c.action do |args, options|
     create_configuration_file unless File.file? config_path
-    File.open(config_path) do |f|
-      mapping = Psych.load(f.read)
-      projects_directory = mapping['projects_directory']
+    with_config do |mapping, projects_directory, current_project|
       projects = Dir.entries(File.expand_path(projects_directory)).reject {|e| e == '.' || e == '..' || !File.directory?(File.expand_path(e, projects_directory))}
-      current_project = mapping['current_project']
       projects.each do |e|
         if e == current_project
           if options.l
@@ -130,10 +129,7 @@ command :rename do |c|
     say_error "You must specify both the original project name and the new project name
   $ #{APP_NAME} rename <source> <target>
     " and abort unless args.size == 2
-    File.open(config_path) do |f|
-      mapping = Psych.load(f.read)
-      projects_directory = mapping['projects_directory']
-      current_project = mapping['current_project']
+    with_config do |mapping, projects_directory, current_project|
       projects = Dir.entries(File.expand_path(projects_directory)).reject {|e| e == '.' || e == '..' || !File.directory?(File.expand_path(e, projects_directory))}
       source = args[0]
       destination = args[1]
