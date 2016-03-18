@@ -34,6 +34,7 @@ If `B` doesn't exist yet, it will be created.
 
 program :version, DesktopBoom::VERSION
 program :description, HELP_STRING
+program :help, 'Author', 'Hwee-Boon Yar <hboon@motionobj.com>'
 
 default_command :switch
 
