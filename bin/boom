@@ -51,6 +51,16 @@ def with_config(&block)
   end
 end
 
+def projects
+  with_config do |mapping, projects_directory, current_project|
+    return Dir.entries(File.expand_path(projects_directory)).reject {|e| e == '.' || e == '..' || !File.directory?(File.expand_path(e, projects_directory))}
+  end
+end
+
+def entries_in_dir(dir)
+  entries = Dir.entries(dir).reject {|e| e == '.' || e == '..' || e.start_with?('.')}
+end
+
 command :switch do |c|
   c.syntax = "#{APP_NAME} [switch]"
   c.summary = 'Switch project'
@@ -98,18 +108,17 @@ command :list do |c|
   c.action do |args, options|
     create_configuration_file unless File.file? config_path
     with_config do |mapping, projects_directory, current_project|
-      projects = Dir.entries(File.expand_path(projects_directory)).reject {|e| e == '.' || e == '..' || !File.directory?(File.expand_path(e, projects_directory))}
       projects.each do |e|
         if e == current_project
           if options.l
-            entries = Dir.entries(File.expand_path(DESKTOP_DIR)).reject {|e| e == '.' || e == '..' || e.start_with?('.')}
+            entries = entries_in_dir(File.expand_path(DESKTOP_DIR))
             say "#{e} (#{entries.size}) <="
           else
             say "#{e} <="
           end
         else
           if options.l
-            entries = Dir.entries(File.expand_path(e, projects_directory)).reject {|e| e == '.' || e == '..' || e.start_with?('.')}
+            entries = entries_in_dir(File.expand_path(e, projects_directory))
             say "#{e} (#{entries.size})"
           else
             say e
@@ -130,7 +139,6 @@ command :rename do |c|
   $ #{APP_NAME} rename <source> <target>
     " and abort unless args.size == 2
     with_config do |mapping, projects_directory, current_project|
-      projects = Dir.entries(File.expand_path(projects_directory)).reject {|e| e == '.' || e == '..' || !File.directory?(File.expand_path(e, projects_directory))}
       source = args[0]
       destination = args[1]
       say_error "Project does not exist: `#{source}`" and abort unless (projects + [current_project]).include? source
