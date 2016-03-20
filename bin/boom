@@ -149,6 +149,21 @@ command :rename do |c|
   end
 end
 
+command :close do |c|
+  c.syntax = "#{APP_NAME} close"
+  c.summary = 'Close current project'
+  c.description = c.summary
+  c.example 'Run command', "$ #{APP_NAME} close"
+  c.action do |args, options|
+    create_configuration_file unless File.file? config_path
+    with_config do |mapping, projects_directory, current_project|
+      break unless current_project && !current_project.empty?
+      move_desktop_to_project(current_project, projects_directory)
+      switch_to(mapping, '')
+    end
+  end
+end
+
 def create_configuration_file
   write_configuration(nil)
 end
