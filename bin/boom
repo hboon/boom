@@ -71,6 +71,10 @@ command :switch do |c|
 doesn't exist, it will be created:
 
     #{APP_NAME} <project name>
+
+or for help:
+
+    #{APP_NAME} --help
 " and abort if args.empty?
     new_project = args[0]
     create_configuration_file unless File.file? config_path
