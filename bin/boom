@@ -153,6 +153,30 @@ command :rename do |c|
   end
 end
 
+command :browse do |c|
+  c.syntax = "#{APP_NAME} browse [<project name>]"
+  c.summary = 'Browse project(s) directory'
+  c.description = c.summary
+  c.example 'Run command', "$ #{APP_NAME} browse [<project name>]"
+  c.action do |args, options|
+    say_error "Specify at most 1 project name
+  $ #{APP_NAME} browse [<project name>]
+    " and abort unless args.empty? || args.size == 1
+    with_config do |mapping, projects_directory, current_project|
+      project = args[0]
+      if project
+        if current_project == project
+          `open "#{File.expand_path(project, DESKTOP_DIR)}"`
+        else
+          `open "#{File.expand_path(project, projects_directory)}"`
+        end
+      else
+        `open "#{File.expand_path(projects_directory)}"`
+      end
+    end
+  end
+end
+
 command :close do |c|
   c.syntax = "#{APP_NAME} close"
   c.summary = 'Close current project'
