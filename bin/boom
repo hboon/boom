@@ -192,6 +192,56 @@ command :close do |c|
   end
 end
 
+command :move do |c|
+  c.syntax = "#{APP_NAME} move"
+  c.summary = 'Move file(s)/folders(s) in current project to another projects'
+  c.description = c.summary
+  c.example 'Run command', "$ #{APP_NAME} move <source file/folder> ... <project name>"
+  c.action do |args, options|
+    say_error "Specify the name(s) of the file(s)/folders(s) in the current project 
+which you want to move and the project to move to
+
+    #{APP_NAME} move <source file/folder> ... <project name>
+
+or for help:
+
+    #{APP_NAME} --help
+" and abort if args.size < 2
+    target_project = args.last
+    sources = args.first(args.size-1)
+    create_configuration_file unless File.file? config_path
+    with_config do |mapping, projects_directory, current_project|
+      if !current_project || current_project.empty?
+        say_error "No open project" and abort
+        break
+      end
+      unless (projects + [current_project]).include? target_project
+        say_error "Project does not exist: `#{target_project}`" and abort
+        break
+      end
+      if target_project == current_project
+        say "Already at project '#{current_project}'"
+        break
+      end
+      if target_project == current_project
+        say "Already at project '#{current_project}'"
+        break
+      end
+      source_not_found = sources.find {|e|
+        exist = File.exists?(File.expand_path(e, DESKTOP_DIR))
+        !exist
+      }
+      say_error "Item is not in current project: `#{source_not_found}`" and abort if source_not_found
+      destination_dup = sources.find {|e|
+        exist = File.exists?(File.expand_path(e, File.expand_path(target_project, projects_directory)))
+        exist
+      }
+      say_error "There is already an item with the name: `#{destination_dup}` in the project `target_project`" and abort if destination_dup
+      sources.each {|e| FileUtils.mv(File.expand_path(e, DESKTOP_DIR), File.expand_path(target_project, projects_directory)) }
+    end
+  end
+end
+
 def create_configuration_file
   write_configuration(nil)
 end
