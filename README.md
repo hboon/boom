@@ -4,7 +4,7 @@ The (OS X) desktop is very handy for storing files and folders you are currently
 
 Enter `boom`. `boom` is a simple tool. You classify your files and folders into "projects" and `boom` helps maintain your OS X desktop by making it contain files and folders for the current project you are working on.
 
-[![Gem Version](https://badge.fury.io/rb/desktop-boom.png)](http://badge.fury.io/rb/ruby_motion_query)
+[![Gem Version](https://badge.fury.io/rb/desktop-boom.svg)](http://badge.fury.io/rb/ruby_motion_query)
 
 Usage
 ---
