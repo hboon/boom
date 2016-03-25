@@ -79,6 +79,10 @@ or for help:
     new_project = args[0]
     create_configuration_file unless File.file? config_path
     with_config do |mapping, projects_directory, current_project|
+      say_error "Project `#{new_project}` does not exist. Create with:
+
+      #{APP_NAME} create #{new_project}
+" and abort unless (projects + [current_project]).include? new_project
       if new_project == current_project
         say "Already at project '#{current_project}'"
         break
@@ -86,6 +90,29 @@ or for help:
       move_desktop_to_project(current_project, projects_directory)
       switch_to(mapping, new_project)
       move_project_to_desktop(new_project, projects_directory)
+    end
+  end
+end
+
+command :create do |c|
+  c.syntax = "#{APP_NAME} create <project name>"
+  c.summary = 'Create project'
+  c.description = c.summary
+  c.example 'Run command', "$ #{APP_NAME} create <project name>"
+  c.action do |args, options|
+    say_error "Specify the name of the project you want to create:
+
+    #{APP_NAME} create <project name>
+
+or for help:
+
+    #{APP_NAME} --help
+" and abort if args.empty?
+    new_project = args[0]
+    create_configuration_file unless File.file? config_path
+    with_config do |mapping, projects_directory, current_project|
+      say_error "Project already exist: `#{new_project}`" and abort if (projects + [current_project]).include? new_project
+      FileUtils.mkdir_p(File.expand_path(new_project, projects_directory))
     end
   end
 end
