@@ -20,7 +20,11 @@ $ boom B
 
 Files and folders in the desktop will be moved away and tagged as belonging to project `A` and the files and folders for project `B` will be moved to the desktop.
 
-If `B` doesn't exist yet, it will be created.
+If `B` doesn't exist yet, you must create it with `create`:
+
+```
+$ boom create B
+```
 
 To get help:
 
