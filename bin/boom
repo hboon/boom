@@ -154,16 +154,16 @@ command :list do |c|
         if e == current_project
           if options.l
             entries = entries_in_dir(File.expand_path(DESKTOP_DIR))
-            say "#{e} (#{entries.size}) <="
+            say "* #{e} (#{entries.size})"
           else
-            say "#{e} <="
+            say "* #{e}"
           end
         else
           if options.l
             entries = entries_in_dir(File.expand_path(e, projects_directory))
-            say "#{e} (#{entries.size})"
+            say "  #{e} (#{entries.size})"
           else
-            say e
+            say "  #{e}"
           end
         end
       end
