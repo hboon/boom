@@ -33,6 +33,19 @@ To get help:
 $ boom --help
 ```
 
+Auto-completion of project names for bash
+---
+If you use the bash shell, you can enable auto-completion of project names when you type `boom` by adding the following to your `.profile` or `.bashrc` file:
+
+```
+_complete_boom_project_names() {
+  projects=`~/p/boom/bin/boom list | cut -c 3-`
+  cur="${COMP_WORDS[COMP_CWORD]}"
+  COMPREPLY=( $(compgen -W "${projects}" -- ${cur}) )
+}
+complete -F _complete_boom_project_names boom
+```
+
 Installation
 ---
 `gem install desktop-boom`
