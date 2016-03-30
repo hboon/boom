@@ -35,7 +35,7 @@ $ boom --help
 
 Auto-completion of project names for bash
 ---
-If you use the bash shell, you can enable auto-completion of project names when you type `boom` by adding the following to your `.profile` or `.bashrc` file:
+If you use the [bash](https://www.gnu.org/software/bash/) shell, you can enable auto-completion of project names when you type `boom` by adding the following to your `.profile` or `.bashrc` file:
 
 ```
 _complete_boom_project_names() {
@@ -48,7 +48,7 @@ complete -F _complete_boom_project_names boom
 
 Auto-completion of project names for fish
 ---
-If you use the fish shell, you can enable auto-completion of project names when you type `boom` by adding the following to a file in one of the directories listed in the value for `$fish_complete_path`. `~/.config/fish/completions/boom.fish` usually works.
+If you use the [fish](https://fishshell.com) shell, you can enable auto-completion of project names when you type `boom` by adding the following to a file in one of the directories listed in the value for `$fish_complete_path`. `~/.config/fish/completions/boom.fish` usually works.
 
 ```
 function __fish_boom_projects
