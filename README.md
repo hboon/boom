@@ -46,6 +46,19 @@ _complete_boom_project_names() {
 complete -F _complete_boom_project_names boom
 ```
 
+Auto-completion of project names for fish
+---
+If you use the fish shell, you can enable auto-completion of project names when you type `boom` by adding the following to a file in one of the directories listed in the value for `$fish_complete_path`. `~/.config/fish/completions/boom.fish` usually works.
+
+```
+function __fish_boom_projects
+  command boom list | cut -c 3-
+end
+
+### Don't bother with specifically supporting "subcommands" like `switch`. Always complete with project names
+complete -f -c boom -a '(__fish_boom_projects)' -d 'Projects'
+```
+
 Installation
 ---
 `gem install desktop-boom`
