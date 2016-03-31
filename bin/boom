@@ -122,13 +122,17 @@ command :current do |c|
   c.summary = 'Show the current project name'
   c.description = c.summary
   c.example 'Run command', "$ #{APP_NAME} current"
+  c.option '-s', 'Shorter format'
   c.action do |args, options|
     create_configuration_file unless File.file? config_path
     with_config do |mapping, projects_directory, current_project|
       if current_project && !current_project.empty?
         say current_project
       else
-        say "No project open. To switch to a project run:
+        if options.s
+          say "-"
+        else
+          say "No project open. To switch to a project run:
 
     #{APP_NAME} <project name>
 
@@ -136,6 +140,7 @@ To see a list of projects:
 
     #{APP_NAME} list
 "
+        end
       end
     end
   end
