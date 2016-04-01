@@ -62,15 +62,15 @@ def entries_in_dir(dir)
 end
 
 command :switch do |c|
-  c.syntax = "#{APP_NAME} [switch]"
+  c.syntax = "#{APP_NAME} [switch] <project name>"
   c.summary = 'Switch project'
   c.description = c.summary
-  c.example 'Run command', "$ #{APP_NAME} <project name>"
+  c.example 'Run command', c.syntax
   c.action do |args, options|
     say_error "Specify the name of the project you want to switch to. If the project 
 doesn't exist, it will be created:
 
-    #{APP_NAME} <project name>
+    #{c.syntax}
 
 or for help:
 
@@ -98,11 +98,11 @@ command :create do |c|
   c.syntax = "#{APP_NAME} create <project name>"
   c.summary = 'Create project'
   c.description = c.summary
-  c.example 'Run command', "$ #{APP_NAME} create <project name>"
+  c.example 'Run command', c.syntax
   c.action do |args, options|
     say_error "Specify the name of the project you want to create:
 
-    #{APP_NAME} create <project name>
+    #{c.syntax}
 
 or for help:
 
@@ -121,7 +121,7 @@ command :current do |c|
   c.syntax = "#{APP_NAME} current"
   c.summary = 'Show the current project name'
   c.description = c.summary
-  c.example 'Run command', "$ #{APP_NAME} current"
+  c.example 'Run command', c.syntax
   c.option '-s', 'Shorter format'
   c.action do |args, options|
     create_configuration_file unless File.file? config_path
@@ -134,7 +134,7 @@ command :current do |c|
         else
           say "No project open. To switch to a project run:
 
-    #{APP_NAME} <project name>
+    #{APP_NAME} [switch] <project name>
 
 To see a list of projects:
 
@@ -150,7 +150,7 @@ command :list do |c|
   c.syntax = "#{APP_NAME} list"
   c.summary = 'Show list of projects'
   c.description = c.summary
-  c.example 'Run command', "$ #{APP_NAME} list"
+  c.example 'Run command', c.syntax
   c.option '-l', 'List in long format'
   c.action do |args, options|
     create_configuration_file unless File.file? config_path
@@ -177,13 +177,13 @@ command :list do |c|
 end
 
 command :rename do |c|
-  c.syntax = "#{APP_NAME} rename"
+  c.syntax = "#{APP_NAME} rename <source> <target>"
   c.summary = 'Rename project'
   c.description = c.summary
-  c.example 'Run command', "$ #{APP_NAME} rename <source> <target>"
+  c.example 'Run command', c.syntax
   c.action do |args, options|
     say_error "You must specify both the original project name and the new project name
-  $ #{APP_NAME} rename <source> <target>
+  #{c.syntax}
     " and abort unless args.size == 2
     with_config do |mapping, projects_directory, current_project|
       source = args[0]
@@ -200,10 +200,10 @@ command :browse do |c|
   c.syntax = "#{APP_NAME} browse [<project name>]"
   c.summary = 'Browse project(s) directory'
   c.description = c.summary
-  c.example 'Run command', "$ #{APP_NAME} browse [<project name>]"
+  c.example 'Run command', c.syntax
   c.action do |args, options|
     say_error "Specify at most 1 project name
-  $ #{APP_NAME} browse [<project name>]
+  #{c.syntax}
     " and abort unless args.empty? || args.size == 1
     with_config do |mapping, projects_directory, current_project|
       project = args[0]
@@ -224,7 +224,7 @@ command :close do |c|
   c.syntax = "#{APP_NAME} close"
   c.summary = 'Close current project'
   c.description = c.summary
-  c.example 'Run command', "$ #{APP_NAME} close"
+  c.example 'Run command', c.syntax
   c.action do |args, options|
     create_configuration_file unless File.file? config_path
     with_config do |mapping, projects_directory, current_project|
@@ -236,15 +236,15 @@ command :close do |c|
 end
 
 command :move do |c|
-  c.syntax = "#{APP_NAME} move"
+  c.syntax = "#{APP_NAME} move <source file/folder> ... <project name>"
   c.summary = 'Move file(s)/folders(s) in current project to another projects'
   c.description = c.summary
-  c.example 'Run command', "$ #{APP_NAME} move <source file/folder> ... <project name>"
+  c.example 'Run command', c.syntax
   c.action do |args, options|
     say_error "Specify the name(s) of the file(s)/folders(s) in the current project 
 which you want to move and the project to move to
 
-    #{APP_NAME} move <source file/folder> ... <project name>
+    #{c.syntax}
 
 or for help:
 
