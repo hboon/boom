@@ -1,6 +1,12 @@
 Boom Changelog
 ===
 
+v0.7.0
+---
+* Added CHANGELOG
+* Tweak help text. Also reduce redundancy
+* Add -s option to `boom current` for "shorter" printout for scripting purposes
+
 v0.6.1, v0.6.0
 ---
 * Link to bash and fish shell
