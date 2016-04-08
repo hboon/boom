@@ -74,6 +74,13 @@ These paths are assumed:
 * Desktop folder is  `~/Desktop/`
 * Projects folder will be created at `~/Documents/boom/`
 
+Moving the projects folder
+---
+You can manually move the projects folder. The default is `~/Documents/boom/`.
+
+1. `mv ~/Documents/boom </new/projects/dir>`
+2. Update `~/.config/boom.yml`'s `projects_directory` property to point to this new directory
+
 License
 ---
 BSD
