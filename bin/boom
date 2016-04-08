@@ -9,8 +9,7 @@ require 'boom'
 APP_NAME = 'boom'
 #TODO make configurable?
 DESKTOP_DIR = File.expand_path('~/Desktop/')
-#TODO make configurable?
-PROJECTS_DIRECTORY = "~/Documents/#{APP_NAME}/"
+DEFAULT_PROJECTS_DIRECTORY = "~/Documents/#{APP_NAME}/"
 HELP_STRING = "#{APP_NAME} helps maintain your OS X desktop. Use #{APP_NAME} so that your desktop 
 only contains files and folders for the current project you are 
 working on.
@@ -291,7 +290,7 @@ end
 
 def write_configuration(contents)
   config_dir = File.dirname(config_path)
-  contents ||= {'projects_directory' => PROJECTS_DIRECTORY}
+  contents ||= {'projects_directory' => DEFAULT_PROJECTS_DIRECTORY}
   FileUtils.mkdir_p(config_dir) unless File.directory? config_dir
   File.open(config_path, 'w') {|f| f.write(Psych.dump(contents))}
 end
